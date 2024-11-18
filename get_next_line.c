@@ -77,7 +77,7 @@ char	*get_next_line(int fd)
 
 	if (fd < 0 || BUFFER_SIZE <= 0)
 		return (NULL);
-	b_read = read(fd, buffer, BUFFER_SIZE);
+	b_read = read(fd, buffer, BUFFER_SIZE + 1);
 	while (!ft_strchr(temp, '\n') && (b_read > 0))
 	{
 		buffer[b_read] = '\0';
