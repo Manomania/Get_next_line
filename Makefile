@@ -14,7 +14,7 @@ SRC			=	get_next_line.c \
 OBJ			=	$(SRC:%.c=$(OBJ_DIR)%.o)
 
 $(OBJ_DIR)%.o:	%.c $(HEAD) | $(OBJ_DIR)
-					$(CC) $(CFLAGS) $(BUFFER_SIZE)=200 -I$(INC_DIR) -c $< -o $@
+					$(CC) $(CFLAGS) $(BUFFER_SIZE)=1 -I$(INC_DIR) -c $< -o $@
 
 all:			$(NAME)
 

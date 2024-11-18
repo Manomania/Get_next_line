@@ -12,7 +12,7 @@
 
 #include "get_next_line.h"
 
-char	*extract_line(char	*bloc)
+static char	*extract_line(char	*bloc)
 {
 	size_t	i;
 	char	*line;
@@ -37,7 +37,7 @@ char	*extract_line(char	*bloc)
 	return (line);
 }
 
-char	*update_line(char	*bloc)
+static char	*update_line(char	*bloc)
 {
 	size_t	i;
 	size_t	j;
@@ -68,26 +68,42 @@ char	*update_line(char	*bloc)
 	return (new);
 }
 
+static char *read_storage(int fd, char *temp)
+{
+	char	buffer[BUFFER_SIZE];
+	ssize_t	b_read;
+
+	b_read = read(fd, buffer, BUFFER_SIZE);
+	while (b_read > 0)
+	{
+		buffer[b_read] = '\0';
+		if (!temp)
+			temp = ft_strdup("");
+		temp = ft_strjoin(temp, buffer);
+		if (!temp)
+		{
+			free(temp);
+			return (NULL);
+		}
+		if (ft_strchr(temp, '\n'))
+			break ;
+		b_read = read(fd, buffer, BUFFER_SIZE);
+	}
+	return (temp);
+}
+
 char	*get_next_line(int fd)
 {
 	static char	*temp;
-	char	buffer[BUFFER_SIZE + 1];
-	ssize_t	b_read;
-	char	*line;
+	char		*line;
 
 	if (fd < 0 || BUFFER_SIZE <= 0)
 		return (NULL);
-	b_read = read(fd, buffer, BUFFER_SIZE + 1);
-	while (!ft_strchr(temp, '\n') && (b_read > 0))
-	{
-		buffer[b_read] = '\0';
-		temp = ft_strjoin(temp, buffer);
-		if (!temp)
-			return (NULL);
-	}
-	if (b_read == -1)
+	temp = read_storage(fd, temp);
+	if (!temp || !*temp)
 	{
 		free(temp);
+		temp = NULL;
 		return (NULL);
 	}
 	line = extract_line(temp);

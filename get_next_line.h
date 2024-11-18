@@ -14,8 +14,6 @@ char	*get_next_line(int fd);
 size_t	ft_strlen(const char *s);
 char	*ft_strjoin(char *s1, char *s2);
 char	*ft_strchr(const char *s, int c);
-size_t	ft_strlcpy(char *dest,const char *src, size_t size);
-char	*extract_line(char	*bloc);
-char	*update_line(char	*bloc);
+char	*ft_strdup(const char *s);
 
 #endif

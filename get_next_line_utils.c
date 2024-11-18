@@ -24,7 +24,7 @@ size_t	ft_strlen(const char *s)
 	return (i);
 }
 
-size_t	ft_strlcpy(char *dest,const char *src, size_t size)
+static size_t	ft_strlcpy(char *dest,const char *src, size_t size)
 {
 	size_t	i;
 
@@ -75,4 +75,22 @@ char	*ft_strchr(const char *s, int c)
 	if (*s == (char)c)
 		return ((char *)s);
 	return (NULL);
+}
+
+char	*ft_strdup(const char *s)
+{
+	char	*dup;
+	int		s_len;
+
+	s_len = ft_strlen(s);
+	dup = (char *)malloc(sizeof(char) * (s_len + 1));
+	if (!dup)
+		return (NULL);
+	dup[s_len] = 0;
+	while (s_len >= 0)
+	{
+		dup[s_len] = s[s_len];
+		s_len--;
+	}
+	return (dup);
 }
