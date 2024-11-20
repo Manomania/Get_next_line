@@ -12,6 +12,18 @@
 
 #include "get_next_line.h"
 
+void	ft_bzero(char *str)
+{
+	size_t	i;
+
+	i = 0;
+	while (str[i] != 0)
+	{
+		str[i] = 0;
+		i++;
+	}
+}
+
 static char	*extract_line(char	*bloc)
 {
 	size_t	i;
@@ -48,12 +60,12 @@ static char	*update_line(char	*bloc)
 	i = 0;
 	while (bloc[i] && bloc[i] != '\n')
 		i++;
-	if (!bloc[i])
+	if (!bloc[i] || !bloc[i + 1])
 		return (free(bloc), NULL);
+	i++;
 	new = malloc(ft_strlen(bloc) - i + 1);
 	if (!new)
 		return (free(bloc), NULL);
-	i++;
 	j = 0;
 	while (bloc[i])
 		new[j++] = bloc[i++];
@@ -83,6 +95,8 @@ static char	*read_storage(int fd, char *temp)
 			break ;
 		b_read = read(fd, buffer, BUFFER_SIZE);
 	}
+	if (b_read < 0)
+		return (free(temp), NULL);
 	return (temp);
 }
 
@@ -95,11 +109,7 @@ char	*get_next_line(int fd)
 		return (NULL);
 	temp = read_storage(fd, temp);
 	if (!temp || !*temp)
-	{
-		free(temp);
-		temp = NULL;
-		return (NULL);
-	}
+		return (free(temp), temp = NULL, NULL);
 	line = extract_line(temp);
 	temp = update_line(temp);
 	return (line);

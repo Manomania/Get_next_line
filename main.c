@@ -22,12 +22,13 @@ int main(void)
 	fd[0] = open("test.txt", O_RDONLY);
 	fd[1] = open("test2.txt", O_RDONLY);
 	printf("====Contenu file====\n");
-	while ((line = get_next_line(fd)) != NULL)
+	while ((line = get_next_line(fd[0])) != NULL)
 	{
 		printf("%s", line);
 		free(line);
 	}
-	close(fd);
+	close(fd[0]);
+	close(fd[1]);
 	return (0);
 }
 
