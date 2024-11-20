@@ -1,16 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_next_line_utils.c                              :+:      :+:    :+:   */
+/*   get_next_line_utils_bonus.c                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: maximart <maximart@42lyon.fr>              +#+  +:+       +#+        */
+/*   By: maximart <maximart@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/11/17 11:22:36 by maximart          #+#    #+#             */
-/*   Updated: 2024/11/18 15:11:17 by maximart         ###   ########.fr       */
+/*   Created: 2024/11/20 16:28:45 by maximart          #+#    #+#             */
+/*   Updated: 2024/11/20 16:28:49 by maximart         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "get_next_line.h"
+#include "get_next_line_bonus.h"
 
 size_t	ft_strlen(const char *s)
 {

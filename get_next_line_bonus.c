@@ -1,16 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_next_line.c                                    :+:      :+:    :+:   */
+/*   get_next_line_bonus.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: maximart <maximart@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/11/20 14:47:27 by maximart          #+#    #+#             */
-/*   Updated: 2024/11/20 15:23:09 by maximart         ###   ########.fr       */
+/*   Created: 2024/11/20 16:29:01 by maximart          #+#    #+#             */
+/*   Updated: 2024/11/20 16:30:31 by maximart         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "get_next_line.h"
+#include "get_next_line_bonus.h"
 
 static char	*extract_line(char	*bloc)
 {
@@ -88,19 +88,19 @@ static char	*read_storage(int fd, char *temp)
 
 char	*get_next_line(int fd)
 {
-	static char	*temp;
+	static char	*temp[OPEN_MAX];
 	char		*line;
 
 	if (fd < 0 || BUFFER_SIZE <= 0)
 		return (NULL);
-	temp = read_storage(fd, temp);
-	if (!temp || !*temp)
+	temp[fd] = read_storage(fd, temp[fd]);
+	if (!temp[fd] || !*temp[fd])
 	{
-		free(temp);
-		temp = NULL;
+		free(temp[fd]);
+		temp[fd] = NULL;
 		return (NULL);
 	}
-	line = extract_line(temp);
-	temp = update_line(temp);
+	line = extract_line(temp[fd]);
+	temp[fd] = update_line(temp[fd]);
 	return (line);
 }

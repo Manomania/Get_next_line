@@ -17,14 +17,11 @@
 
 int main(void)
 {
-	int fd;
+	int fd[2];
 	char *line;
-	fd = open("test.txt", O_RDONLY);
-	if (fd == -1)
-	{
-		perror("Error opening test.txt");
-		return (1);
-	}
+	fd[0] = open("test.txt", O_RDONLY);
+	fd[1] = open("test2.txt", O_RDONLY);
+	printf("====Contenu file====\n");
 	while ((line = get_next_line(fd)) != NULL)
 	{
 		printf("%s", line);
@@ -34,3 +31,19 @@ int main(void)
 	return (0);
 }
 
+// int	main(void)
+// {
+// 	int fd;
+// 	char *line;
+//
+// 	fd = open("test.txt", O_RDONLY);
+// 	printf("====Contenu file====\n");
+// 	while (line = get_next_line(fd) != NULL)
+// 	{
+// 		printf("%s", line);
+// 		free(line);
+// 		usleep(1000000);
+// 	}
+// 	close(fd);
+// 	return (0);
+// }
