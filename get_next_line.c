@@ -12,18 +12,6 @@
 
 #include "get_next_line.h"
 
-void	ft_bzero(char *str)
-{
-	size_t	i;
-
-	i = 0;
-	while (str[i] != 0)
-	{
-		str[i] = 0;
-		i++;
-	}
-}
-
 static char	*extract_line(char	*bloc)
 {
 	size_t	i;
@@ -60,7 +48,7 @@ static char	*update_line(char	*bloc)
 	i = 0;
 	while (bloc[i] && bloc[i] != '\n')
 		i++;
-	if (!bloc[i] || !bloc[i + 1])
+	if (!bloc[i])
 		return (free(bloc), NULL);
 	i++;
 	new = malloc(ft_strlen(bloc) - i + 1);
@@ -76,25 +64,27 @@ static char	*update_line(char	*bloc)
 
 static char	*read_storage(int fd, char *temp)
 {
-	char	buffer[BUFFER_SIZE + 1];
+	char	*buffer;
 	char	*old_temp;
 	ssize_t	b_read;
 
+	buffer = malloc(BUFFER_SIZE + 1);
+	if (!buffer)
+		return (free(temp), NULL);
 	b_read = read(fd, buffer, BUFFER_SIZE);
 	while (b_read > 0)
 	{
 		buffer[b_read] = '\0';
-		if (!temp)
-			temp = ft_strdup("");
 		old_temp = temp;
 		temp = ft_strjoin(temp, buffer);
 		free(old_temp);
 		if (!temp)
-			return (NULL);
+			return (free(buffer), NULL);
 		if (ft_strchr(temp, '\n'))
 			break ;
 		b_read = read(fd, buffer, BUFFER_SIZE);
 	}
+	free(buffer);
 	if (b_read < 0)
 		return (free(temp), NULL);
 	return (temp);
@@ -108,9 +98,11 @@ char	*get_next_line(int fd)
 	if (fd < 0 || BUFFER_SIZE <= 0)
 		return (NULL);
 	temp = read_storage(fd, temp);
-	if (!temp || !*temp)
-		return (free(temp), temp = NULL, NULL);
+	if (!temp)
+		return (NULL);
 	line = extract_line(temp);
+	if (!line)
+		return (free(temp), temp = NULL, NULL);
 	temp = update_line(temp);
 	return (line);
 }

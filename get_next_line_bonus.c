@@ -64,25 +64,25 @@ static char	*update_line(char	*bloc)
 
 static char	*read_storage(int fd, char *temp)
 {
-	char	buffer[BUFFER_SIZE + 1];
+	char	*buffer;
 	char	*old_temp;
 	ssize_t	b_read;
 
+	buffer = malloc(BUFFER_SIZE + 1);
+	if (!buffer)
+		return (free(temp), NULL);
 	b_read = read(fd, buffer, BUFFER_SIZE);
 	while (b_read > 0)
 	{
 		buffer[b_read] = '\0';
-		if (!temp)
-			temp = ft_strdup("");
 		old_temp = temp;
 		temp = ft_strjoin(temp, buffer);
 		free(old_temp);
-		if (!temp)
-			return (NULL);
 		if (ft_strchr(temp, '\n'))
 			break ;
 		b_read = read(fd, buffer, BUFFER_SIZE);
 	}
+	free(buffer);
 	if (b_read < 0)
 		return (free(temp), NULL);
 	return (temp);
@@ -96,9 +96,15 @@ char	*get_next_line(int fd)
 	if (fd < 0 || BUFFER_SIZE <= 0)
 		return (NULL);
 	temp[fd] = read_storage(fd, temp[fd]);
-	if (!temp[fd] || !*temp[fd])
-		return (free(temp[fd]), NULL);
+	if (!temp[fd])
+		return (NULL);
 	line = extract_line(temp[fd]);
+	if (!line)
+	{
+		free(temp[fd]);
+		temp[fd] = NULL;
+		return (NULL);
+	}
 	temp[fd] = update_line(temp[fd]);
 	return (line);
 }
