@@ -78,6 +78,8 @@ static char	*read_storage(int fd, char *temp)
 		old_temp = temp;
 		temp = ft_strjoin(temp, buffer);
 		free(old_temp);
+		if (!temp)
+			return (free(buffer), NULL);
 		if (ft_strchr(temp, '\n'))
 			break ;
 		b_read = read(fd, buffer, BUFFER_SIZE);
