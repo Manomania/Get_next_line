@@ -12,101 +12,69 @@
 
 #include "get_next_line_bonus.h"
 
-static char	*extract_line(char	*bloc)
+static void	ft_bzero(char *str)
 {
 	size_t	i;
-	char	*line;
 
-	if (!bloc || !*bloc)
-		return (NULL);
 	i = 0;
-	while (bloc[i] && bloc[i] != '\n')
-		i++;
-	line = malloc(sizeof(char) * (i + (bloc[i] == '\n') + 1));
-	if (!line)
-		return (NULL);
-	i = 0;
-	while (bloc[i] && bloc[i] != '\n')
+	while (str[i] != 0)
 	{
-		line[i] = bloc[i];
+		str[i] = 0;
 		i++;
 	}
-	if (bloc[i] == '\n')
-		line[i++] = '\n';
-	line[i] = '\0';
-	return (line);
 }
 
-static char	*update_line(char	*bloc)
+static void	ft_clean(char *str)
 {
 	size_t	i;
 	size_t	j;
-	char	*new;
 
-	if (!bloc || !*bloc)
-		return (NULL);
 	i = 0;
-	while (bloc[i] && bloc[i] != '\n')
+	while (str[i] != '\n' && str[i] != 0)
 		i++;
-	if (!bloc[i] || !bloc[i + 1])
-		return (free(bloc), NULL);
-	i++;
-	new = malloc(ft_strlen(bloc) - i + 1);
-	if (!new)
-		return (free(bloc), NULL);
+	if (str[i] == '\n')
+		i++;
 	j = 0;
-	while (bloc[i])
-		new[j++] = bloc[i++];
-	new[j] = '\0';
-	free(bloc);
-	return (new);
+	while (str[i + j])
+	{
+		str[j] = str[i + j];
+		j++;
+	}
+	str[j] = 0;
 }
 
-static char	*read_storage(int fd, char *temp)
+static char	*ft_rd(int fd, int rd, char *ln, char bf[OPEN_MAX][BUFFER_SIZE + 1])
 {
-	char	*buffer;
-	char	*old_temp;
-	ssize_t	b_read;
-
-	buffer = malloc(BUFFER_SIZE + 1);
-	if (!buffer)
-		return (free(temp), NULL);
-	b_read = read(fd, buffer, BUFFER_SIZE);
-	while (b_read > 0)
+	while (rd && ft_check_line(ln) == 0)
 	{
-		buffer[b_read] = '\0';
-		old_temp = temp;
-		temp = ft_strjoin(temp, buffer);
-		free(old_temp);
-		if (!temp)
-			return (free(buffer), NULL);
-		if (ft_strchr(temp, '\n'))
-			break ;
-		b_read = read(fd, buffer, BUFFER_SIZE);
+		rd = read(fd, bf[fd], BUFFER_SIZE);
+		if (rd < 0)
+			return (ft_bzero(bf[fd]), free(ln), NULL);
+		bf[fd][rd] = 0;
+		ln = ft_strjoin(ln, bf[fd]);
+		if (!ln)
+			return (NULL);
 	}
-	free(buffer);
-	if (b_read < 0)
-		return (free(temp), NULL);
-	return (temp);
+	return (ln);
 }
 
 char	*get_next_line(int fd)
 {
-	static char	*temp[OPEN_MAX];
+	static char	buffer[OPEN_MAX][BUFFER_SIZE + 1];
 	char		*line;
+	int			read_byte;
 
+	read_byte = 1;
 	if (fd < 0 || BUFFER_SIZE <= 0)
 		return (NULL);
-	temp[fd] = read_storage(fd, temp[fd]);
-	if (!temp[fd])
-		return (NULL);
-	line = extract_line(temp[fd]);
+	line = ft_strdup(buffer[fd]);
 	if (!line)
-	{
-		free(temp[fd]);
-		temp[fd] = NULL;
 		return (NULL);
-	}
-	temp[fd] = update_line(temp[fd]);
+	line = ft_rd(fd, read_byte, line, buffer);
+	if (!line)
+		return (NULL);
+	ft_clean(buffer[fd]);
+	if (line[0] == 0)
+		return (free(line), NULL);
 	return (line);
 }

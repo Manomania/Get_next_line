@@ -12,97 +12,61 @@
 
 #include "get_next_line.h"
 
-static char	*extract_line(char	*bloc)
+static void	ft_bzero(char *str)
 {
 	size_t	i;
-	char	*line;
 
-	if (!bloc || !*bloc)
-		return (NULL);
 	i = 0;
-	while (bloc[i] && bloc[i] != '\n')
-		i++;
-	line = malloc(sizeof(char) * (i + (bloc[i] == '\n') + 1));
-	if (!line)
-		return (NULL);
-	i = 0;
-	while (bloc[i] && bloc[i] != '\n')
+	while (str[i] != 0)
 	{
-		line[i] = bloc[i];
+		str[i] = 0;
 		i++;
 	}
-	if (bloc[i] == '\n')
-		line[i++] = '\n';
-	line[i] = '\0';
-	return (line);
 }
 
-static char	*update_line(char	*bloc)
+static void	ft_clean(char *str)
 {
 	size_t	i;
 	size_t	j;
-	char	*new;
 
-	if (!bloc || !*bloc)
-		return (NULL);
 	i = 0;
-	while (bloc[i] && bloc[i] != '\n')
+	while (str[i] != '\n' && str[i] != 0)
 		i++;
-	if (!bloc[i])
-		return (free(bloc), NULL);
-	i++;
-	new = malloc(ft_strlen(bloc) - i + 1);
-	if (!new)
-		return (free(bloc), NULL);
+	if (str[i] == '\n')
+		i++;
 	j = 0;
-	while (bloc[i])
-		new[j++] = bloc[i++];
-	new[j] = '\0';
-	free(bloc);
-	return (new);
-}
-
-static char	*read_storage(int fd, char *temp)
-{
-	char	*buffer;
-	char	*old_temp;
-	ssize_t	b_read;
-
-	buffer = malloc(BUFFER_SIZE + 1);
-	if (!buffer)
-		return (free(temp), NULL);
-	b_read = read(fd, buffer, BUFFER_SIZE);
-	while (b_read > 0)
+	while (str[i + j])
 	{
-		buffer[b_read] = '\0';
-		old_temp = temp;
-		temp = ft_strjoin(temp, buffer);
-		free(old_temp);
-		if (!temp)
-			return (free(buffer), NULL);
-		if (ft_strchr(temp, '\n'))
-			break ;
-		b_read = read(fd, buffer, BUFFER_SIZE);
+		str[j] = str[i + j];
+		j++;
 	}
-	free(buffer);
-	if (b_read < 0)
-		return (free(temp), NULL);
-	return (temp);
+	str[j] = 0;
 }
 
 char	*get_next_line(int fd)
 {
-	static char	*temp;
+	static char	buffer[BUFFER_SIZE + 1] = "\0";
 	char		*line;
+	int			read_byte;
 
+	read_byte = 1;
 	if (fd < 0 || BUFFER_SIZE <= 0)
 		return (NULL);
-	temp = read_storage(fd, temp);
-	if (!temp)
-		return (NULL);
-	line = extract_line(temp);
+	line = ft_strdup(buffer);
 	if (!line)
-		return (free(temp), temp = NULL, NULL);
-	temp = update_line(temp);
+		return (NULL);
+	while (read_byte && ft_check_line(line) == 0)
+	{
+		read_byte = read(fd, buffer, BUFFER_SIZE);
+		if (read_byte < 0)
+			return (ft_bzero(buffer), free(line), NULL);
+		buffer[read_byte] = '\0';
+		line = ft_strjoin(line, buffer);
+		if (!line)
+			return (NULL);
+	}
+	ft_clean(buffer);
+	if (line[0] == 0)
+		return (free(line), NULL);
 	return (line);
 }
